@@ -1,12 +1,13 @@
 @charset "utf-8";
-@import "partial/common";
+@import "./common/reset";
+@import "./common/var";
+@import "./common/media_query";
+@import "./common/header";
+@import "./common/footer";
+
 //总通用样式
 .ms-controller{
   visibility: hidden
-}
-.sprite_icon{
-  .bg_img('sprite_icon.png');
-  background-size:4.14rem 2.52rem;
 }
 .loading{
   width:100%;
@@ -29,5 +30,12 @@
   .bg_img('header_banner.jpg');
   background-size:100% auto;
   background-color:#f4f8ff;
-  min-height:100%;
+}
+
+//示例样式
+.test{
+  width:100%;
+  height:8.8rem;
+  font-size:0.4rem;
+  text-align:center;
 }

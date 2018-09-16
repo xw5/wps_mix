@@ -2,26 +2,28 @@ var gulp = require("gulp");
 var gp = require("gulp-load-plugins")();
 var runSequence = require("run-sequence");
 var browserSync = require('browser-sync').create();
-var pathUrl = require("./config/pathConfig");
+var config = require("./config/config");
 var nowStatus = getEnvStatus();//获取当前所处的环境
 
 //编译的路径定义
-var styleUrl = nowStatus === 0 ? pathUrl.staticUrl : pathUrl.styleUrl;
-var assetsUrl = nowStatus === 0 ? pathUrl.staticUrl : pathUrl.assetsUrl;
-var htmlUrl = nowStatus === 0 ? pathUrl.staticUrl : pathUrl.htmlUrl;
-var jsDevUrl = nowStatus === 0 ? pathUrl.staticUrl : pathUrl.jsDevUrl;
-var tempDir = pathUrl.temp_dir;
+var styleUrl = nowStatus === 0 ? config.staticUrl : config.styleUrl;
+var assetsUrl = nowStatus === 0 ? config.staticUrl : config.assetsUrl;
+var htmlUrl = nowStatus === 0 ? config.staticUrl : config.htmlUrl;
+var jsDevUrl = nowStatus === 0 ? config.staticUrl : config.jsDevUrl;
+var tempDir = config.temp_dir;
 
 var isJs = nowStatus===0 ? 'js/' : '';
 var isCss = nowStatus===0 ? 'css/' : '';
 
-var cssOnlineUrl = pathUrl.cssOnlineUrl;
-var jsOnlineUrl = pathUrl.jsOnlineUrl;
+var cssOnlineUrl = config.cssOnlineUrl;
+var jsOnlineUrl = config.jsOnlineUrl;
 var changeUrl = {
     '\\./css/': cssOnlineUrl,
     '\\./assets/': cssOnlineUrl+'assets',
     '\\./js/': jsOnlineUrl
 };
+
+var hasServer = false;
 
 //判断当前是在什么环境下
 function getEnvStatus(){
@@ -66,7 +68,7 @@ gulp.task("clean:assets",function(){
 
 //清除dist目录
 gulp.task("clean:dist",function(){
-	return gulp.src(pathUrl.staticUrl)
+	return gulp.src(config.staticUrl)
 		.pipe(gp.clean())
 });
 
@@ -87,7 +89,7 @@ gulp.task('revCss', function () {
 //开发环境编译less任务,同时做兼容处理
 gulp.task('less',function(){
 	var now = new Date();
-	return gulp.src("./less/*.less")
+	return gulp.src("./src/less/*.less")
 	.pipe(gp.plumber())
 	.pipe(gp.debug({title:'less解析:'}))
 	.pipe(gp.sourcemaps.init())
@@ -103,22 +105,23 @@ gulp.task('less',function(){
 	.pipe(gulp.dest(styleUrl + isCss))
 	.pipe(gp.if(nowStatus != 2, gp.revAyou.manifest()))
 	.pipe(gp.if(nowStatus != 2, gulp.dest(tempDir+'rev/css/')))
+	.pipe(gp.if(hasServer,browserSync.stream()))
 });
 
 //静态等资源移动任务:图片、视频、字体等
 gulp.task("assetsMove",function(){
-	return gulp.src("./assets/**")
+	return gulp.src("./src/assets/**")
 	.pipe(gp.plumber())
 	.pipe(gp.debug({title:'静态资源移动:'}))
 	.pipe(gp.if(nowStatus != 2, gp.revAyou()))
-	.pipe(gulp.dest(assetsUrl))
+	.pipe(gulp.dest(assetsUrl+'assets/'))
 	.pipe(gp.if(nowStatus != 2, gp.revAyou.manifest()))
 	.pipe(gp.if(nowStatus != 2, gulp.dest(tempDir+'rev/assets/')))
 });
 
 //通用js库插件移动
 gulp.task("libMove",function(){
-	return gulp.src(["./js/lib/**"])
+	return gulp.src(["./src/js/lib/**"])
 	.pipe(gp.plumber())
 	.pipe(gp.revAyou())
 	.pipe(gulp.dest(jsDevUrl + isJs + "lib/"))
@@ -127,7 +130,7 @@ gulp.task("libMove",function(){
 }); 
 //js模块化开发requirejs
 gulp.task('rjs', function(){
-	return gulp.src('./js/*.js')
+	return gulp.src('./src/js/*.js')
 	.pipe(gp.plumber())
 	.pipe(gp.debug({title:'js打包requirejs:'}))
 	.pipe(gp.sourcemaps.init())
@@ -144,11 +147,12 @@ gulp.task('rjs', function(){
 	.pipe(gulp.dest(jsDevUrl+isJs))
 	.pipe(gp.if(nowStatus != 2, gp.revAyou.manifest()))
 	.pipe(gp.if(nowStatus != 2, gulp.dest(tempDir+'rev/js/')))
+	.pipe(gp.if(hasServer,browserSync.stream()))
 });
 
 //html资源资源换成线上路径
 gulp.task("htmlPath", function(){
-    return gulp.src(["*.html"])
+    return gulp.src(["./src/*.html"])
         .pipe(gp.plumber())
         .pipe(gp.debug({title:'html路径及版本修改:'}))
         // .pipe(gp.if(nowStatus != 0,gp.assetRevision({
@@ -159,52 +163,68 @@ gulp.task("htmlPath", function(){
         .pipe(gulp.dest(htmlUrl));
 });
 
+//html模板功能实现
+gulp.task('htmlSolve',function(){
+	return gulp.src('src/*.html')
+	.pipe(gp.plumber())
+    .pipe(gp.debug({title:'html处理:'}))
+	.pipe(gp.if(config.template,gp.fileInclude({
+      prefix: '@@',
+      basepath: '@file'
+    })))
+	.pipe(gp.if(nowStatus != 0,gp.urlReplace(changeUrl)))
+	.pipe(gulp.dest(htmlUrl))
+	.pipe(gp.if(hasServer,browserSync.stream()))
+});
+
 //文件变化监听
 gulp.task("watch",function(){
-	gulp.watch("./js/**/*.js",function(){
+	gulp.watch("./src/js/**",function(){
 		console.log('===================js监听到修改===================');
 		if(nowStatus === 0){
-			runSequence(nowStatus === 0 ? "clean:js" : "" ,"rjs");
+			runSequence("clean:js","rjs");
 		}else{
 			runSequence("rjs");
 		}
 	});
-	gulp.watch("./assets/**/*.*",function(){
+	gulp.watch("./src/assets/**",function(){
 		console.log('===================静态图片等资源监听到修改===================');
 		if(nowStatus === 0){
-			runSequence(nowStatus === 0 ? "clean:assets" : "" ,"assetsMove");
+			runSequence("clean:assets","assetsMove");
 		}else{
 			runSequence("assetsMove");
 		}
 	});
-	gulp.watch("./less/**/*.*",function(){
+	gulp.watch("./src/less/**",function(){
 		console.log('===================less监听到修改===================');
 		if(nowStatus === 0){
-			runSequence(nowStatus === 0 ? "clean:css" : "" ,"less");
+			runSequence("clean:css","less");
 		}else{
 			runSequence("less");
 		}
 	});
-	gulp.watch("./*.html",function(){
+	gulp.watch(["./src/*.html","./src/template/*.html"],function(){
 		console.log('===================html监听到修改===================');
 		if(nowStatus === 0){
-			runSequence(nowStatus === 0 ? "clean:html" : "" ,"htmlPath");
+			runSequence("clean:html","htmlSolve");
 		}else{
-			runSequence("htmlPath");
+			runSequence("htmlSolve");
 		}
 	});
 });
 //开启本地服务器
 gulp.task("server",function(){
-	browserSync.init({
-		files:[
-			pathUrl.staticUrl+"css/*.css",
-			pathUrl.staticUrl+"js/*.js",
-			pathUrl.staticUrl+"assets/**/*.*",
-			pathUrl.staticUrl+"*.html"
-		],
+	hasServer = true;
+	bs = browserSync.init({
+		// files:[
+		// 	config.staticUrl+"css/*.css",
+		// 	config.staticUrl+"js/*.js",
+		// 	config.staticUrl+"assets/**",
+		// 	config.staticUrl+"*.html"
+		// ],
+		port:6666,
 		server:{
-			baseDir:pathUrl.staticUrl
+			baseDir:config.staticUrl
 		}
 	})
 });
@@ -212,12 +232,12 @@ gulp.task("server",function(){
 gulp.task('start',function(){
 	if(nowStatus === 0){
 		console.log('===================启动静态开发流程===================')
-		runSequence("clean:dist",["less","libMove","rjs","assetsMove"],"htmlPath","watch","server");
+		runSequence("clean:dist",["less","libMove","rjs","assetsMove"],"htmlSolve","watch","server");
 	}else if(nowStatus === 1){
 		console.log('===================启动开发流程(路径替换，文件归位)===================')
-		runSequence(["less","libMove","rjs","assetsMove"],"htmlPath","watch");
+		runSequence(["less","libMove","rjs","assetsMove"],"htmlSolve","watch");
 	}else{
 		console.log('===================启动构建发布(压缩JS，打版本号)===================')
-		runSequence(["less","libMove","rjs","assetsMove"],"htmlPath","revHtml","revCss");
+		runSequence(["less","libMove","rjs","assetsMove"],"htmlSolve","revHtml","revCss");
 	}
 });

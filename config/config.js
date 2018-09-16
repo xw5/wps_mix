@@ -1,6 +1,7 @@
 var proName = 'mobile_sign_v2';
 module.exports={
     proName:proName,
+    template:true,
     staticUrl:'./dist/',
     temp_dir:'./temp/',
     styleUrl : './publish/css/',//'../../public/styles/h5/'+proName+'/',//css存放的目录

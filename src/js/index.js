@@ -10,7 +10,7 @@ require(['util','OpenCard','PlayList','dataServices','wx'],
             //模拟loading效果
             setTimeout(function(){
                 $('#pageLoading').remove();
-            },1000);
+            },1500);
         })
         avalon.scan(document.body);
         return model;
