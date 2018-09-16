@@ -16,11 +16,12 @@ var isJs = nowStatus===0 ? 'js/' : '';
 var isCss = nowStatus===0 ? 'css/' : '';
 
 var cssOnlineUrl = config.cssOnlineUrl;
+var assetsOnlineUrl = config.assetsOnlineUrl;
 var jsOnlineUrl = config.jsOnlineUrl;
 var changeUrl = {
-    '\\./css/': cssOnlineUrl,
-    '\\./assets/': cssOnlineUrl+'assets',
-    '\\./js/': jsOnlineUrl
+    '\\./css/': cssOnlineUrl+'css/',
+    '\\./assets/': assetsOnlineUrl+'assets/',
+    '\\./js/': jsOnlineUrl+'js/'
 };
 
 var hasServer = false;
