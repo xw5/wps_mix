@@ -1,9 +1,9 @@
-var proName = 'mobile_sign_v2';
+var proName = 'wps_mix';//项目名称
 module.exports={
     proName:proName,
-    template:false,
-    staticUrl:'./dist/',
-    temp_dir:'./temp/',
+    template:false,//是否需要html模块化
+    staticUrl:'./dist/',//静态开发输出存放目录
+    temp_dir:'./temp/',//用于存放项目文件版本信息
     styleUrl : './publish/css/',//'../../public/styles/h5/'+proName+'/',//css存放的目录
     assetsUrl : './publish/assets/',//'../../public/styles/h5/'+proName+'/',//图片,字体等资源的存放的目录
     htmlUrl : './publish/',//'../../resources/views/h5/'+proName+'/',//html存放的目录

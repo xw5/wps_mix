@@ -9,30 +9,37 @@
 <body>
     <h1 class="text_hide">这里是有益于SEO的标题</h1>
 
-    <!-- 头部 S-->
-    @@include("./template/header.html")
-    <!-- 头部 E-->
-
     <div class="loading" id="pageLoading">
         <img src="./assets/page_loading.gif" alt="" class="loading_img">
     </div>
     <div class="container ms-controller" ms-controller="mobileSign">
+
+        <!-- 头部 S-->
+        @@include("./template/header.html")
+        <!-- 头部 E-->
+
         <div class="test">
             <p class="test_tips">{{test}}</p>
-            <p class="test_tips">这是一个项目模板运行示例文件</p>
             <dl class="test_list">
-                <dt>使用教程</dt>
-                <dd>npm install</dd>
-                <dd>npm run static</dd>
-                <dd>npm run dev</dd>
-                <dd>npm run build</dd>
+                <dt class="use_title">使用步骤：</dt>
+                <dd class="use_item">npm install&nbsp;&nbsp;&nbsp;&nbsp;//安装模块</dd>
+                <dd class="use_item">npm run static&nbsp;&nbsp;&nbsp;&nbsp;//走静态开发流程</dd>
+                <dd class="use_item">npm run dev&nbsp;&nbsp;&nbsp;&nbsp;//走混合开发模式</dd>
+                <dd class="use_item">npm run build&nbsp;&nbsp;&nbsp;&nbsp;//走上线前构建流程</dd>
+                <dt class="use_title">使用说明：</dt>
+                <dd class="use_item">1. 遵循目录结构开发</dd>
+                <dd class="use_item">2. 输出目录可自行配置，详见config/config.js</dd>
+                <dd class="use_item">3. 项目需要模块需自行配置别名，详见config/build.js</dd>
+                <dd class="use_item">4. 推荐通过wps-cli配套使用</dd>
+                <dd class="use_item">4. 模板源代码见：<a href="https://github.com/xw5/wps_mix">wps_mix</a></dd>
             </dl>
         </div>
-    </div>
 
-    <!-- 底部 S-->
-    @@include("./template/footer.html")
-    <!-- 底部 E-->
+        <!-- 底部 S-->
+        @@include("./template/footer.html")
+        <!-- 底部 E-->
+
+    </div>
     
     <script type="text/javascript">
         //var datamodel = <%!!$data_model!!%>;
