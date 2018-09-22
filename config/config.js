@@ -1,9 +1,8 @@
 var proName = 'wps_mix';//项目名称
 module.exports={
     proName:proName,
-    rem:false,//是否是REM布局项目
-    sprite:false,//是否需要精灵图
-    tiny:true,//是否要压缩图片
+    rem:true,//是否是REM布局项目
+    sprite:true,//是否需要精灵图
     template:false,//是否需要html模块化
     staticUrl:'./dist/',//静态开发输出存放目录
     temp_dir:'./temp/',//用于存放项目文件版本信息
