@@ -1,8 +1,11 @@
-var gulp = require("gulp");
-var gp = require("gulp-load-plugins")();
-var runSequence = require("run-sequence");
+var gulp = require('gulp');
+var gp = require('gulp-load-plugins')();
+var merge = require('merge-stream');
+var spritesmith = require('gulp.spritesmith');
+
+var runSequence = require('run-sequence');
 var browserSync = require('browser-sync').create();
-var config = require("./config/config");
+var config = require('./config/config');
 var nowStatus = getEnvStatus();//获取当前所处的环境
 
 //编译的路径定义
@@ -15,6 +18,10 @@ var tempDir = config.temp_dir;
 var isJs = nowStatus===0 ? 'js/' : '';
 var isCss = nowStatus===0 ? 'css/' : '';
 var isAssets = nowStatus===0 ? 'assets/' : '';
+var remOrPx = {
+	unit:config.rem ? 'rem' : 'px',
+	remBase:config.rem ? 100 : 1
+}
 
 var cssOnlineUrl = config.cssOnlineUrl;
 var assetsOnlineUrl = config.assetsOnlineUrl;
@@ -74,6 +81,40 @@ gulp.task("clean:dist",function(){
 		.pipe(gp.clean())
 });
 
+//精灵图制作
+gulp.task('sprite', function () {
+	var spriteData = gulp.src('./src/assets/sprites/*.png').pipe(spritesmith({
+		imgName: 'sprite.png',
+		cssName: 'sprite.less',
+		padding:5,
+		algorithm:'binary-tree',
+		cssTemplate: function (data) {//css生成规则
+			var arr=[];
+			data.sprites.forEach(function (sprite) {
+					//console.log(sprite);
+					arr.push(".icon-"+sprite.name+
+					"{" +
+					"background-image: url('../assets/"+sprite.escaped_image+"');"+
+					"background-position: "+sprite.offset_x/remOrPx.remBase+remOrPx.unit+" "+sprite.offset_y/remOrPx.remBase+remOrPx.unit+";"+
+					"background-size:"+sprite.total_width/remOrPx.remBase+remOrPx.unit+" "+sprite.total_height/remOrPx.remBase+remOrPx.unit+";"+
+					"width:"+sprite.width/remOrPx.remBase+remOrPx.unit+";"+
+					"height:"+sprite.height/remOrPx.remBase+remOrPx.unit+";"+
+					"}\n");
+			});
+			return arr.join("");
+		}
+	})
+);
+
+	var imgStream = spriteData.img
+		.pipe(gulp.dest('./src/assets/'));
+
+	var cssStream = spriteData.css
+		.pipe(gulp.dest('./src/less/common/'));
+
+	return merge(imgStream, cssStream);
+});
+
 //css、js、图片等静态文件版本管理
 gulp.task('revHtml', function () {
 	return gulp.src([tempDir+'rev/**/*.json', htmlUrl+'*.html'])
@@ -112,7 +153,7 @@ gulp.task('less',function(){
 
 //静态等资源移动任务:图片、视频、字体等
 gulp.task("assetsMove",function(){
-	return gulp.src("./src/assets/**")
+	return gulp.src(["./src/assets/**","!./src/assets/sprites/**"])
 	.pipe(gp.plumber())
 	.pipe(gp.debug({title:'静态资源移动:'}))
 	.pipe(gp.if(nowStatus != 2, gp.revAyou()))
@@ -234,12 +275,24 @@ gulp.task("server",function(){
 gulp.task('start',function(){
 	if(nowStatus === 0){
 		console.log('===================启动静态开发流程===================')
-		runSequence("clean:dist",["less","libMove","rjs","assetsMove"],"htmlSolve","watch","server");
+		if(config.sprite){
+			runSequence("clean:dist","sprite",["less","libMove","rjs","assetsMove"],"htmlSolve","watch","server");
+		}else{
+			runSequence("clean:dist",["less","libMove","rjs","assetsMove"],"htmlSolve","watch","server");
+		}
 	}else if(nowStatus === 1){
 		console.log('===================启动开发流程(路径替换，文件归位)===================')
-		runSequence(["less","libMove","rjs","assetsMove"],"htmlSolve","watch");
+		if(config.sprite){
+			runSequence("sprite",["less","libMove","rjs","assetsMove"],"htmlSolve","watch");
+		}else{
+			runSequence(["less","libMove","rjs","assetsMove"],"htmlSolve","watch");
+		}	
 	}else{
 		console.log('===================启动构建发布(压缩JS，打版本号)===================')
-		runSequence(["less","libMove","rjs","assetsMove"],"htmlSolve","revHtml","revCss");
+		if(config.sprite){
+			runSequence("sprite",["less","libMove","rjs","assetsMove"],"htmlSolve","revHtml","revCss");
+		}else{
+			runSequence(["less","libMove","rjs","assetsMove"],"htmlSolve","revHtml","revCss");
+		}	
 	}
 });

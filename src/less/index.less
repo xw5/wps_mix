@@ -2,6 +2,7 @@
 @import "./common/reset";
 @import "./common/var";
 @import "./common/media_query";
+@import "./common/sprite";
 @import "./common/header";
 @import "./common/footer";
 
@@ -27,33 +28,10 @@
   position:relative;
   .ovhide();
   .auto();
-  //.bg_img('header_banner.jpg');
   .bg_img('ptg.png');
   background-size:100% auto;
   color:#fff;
 }
 
-//示例样式
-.test_tips{
-  line-height:1rem;
-}
-.test{
-  width:100%;
-  height:10rem;
-  font-size:0.36rem;
-  text-align:center;
-}
-.test_list{
-  width:9.8rem;
-  text-align:left;
-  line-height:0.56rem;
-  padding:0.3rem;
-  .auto();
-  margin-top:1rem;
-  background-color:rgba(0,0,0,0.3);
-}
-.use_title{
-  &:nth-child(6){
-    margin-top:0.3rem;
-  }
-}
+//纯测试样式
+@import "./common/test";
