@@ -14,6 +14,7 @@ var tempDir = config.temp_dir;
 
 var isJs = nowStatus===0 ? 'js/' : '';
 var isCss = nowStatus===0 ? 'css/' : '';
+var isAssets = nowStatus===0 ? 'assets/' : '';
 
 var cssOnlineUrl = config.cssOnlineUrl;
 var assetsOnlineUrl = config.assetsOnlineUrl;
@@ -115,7 +116,7 @@ gulp.task("assetsMove",function(){
 	.pipe(gp.plumber())
 	.pipe(gp.debug({title:'静态资源移动:'}))
 	.pipe(gp.if(nowStatus != 2, gp.revAyou()))
-	.pipe(gulp.dest(assetsUrl+'assets/'))
+	.pipe(gulp.dest(assetsUrl+isAssets))
 	.pipe(gp.if(nowStatus != 2, gp.revAyou.manifest()))
 	.pipe(gp.if(nowStatus != 2, gulp.dest(tempDir+'rev/assets/')))
 });
