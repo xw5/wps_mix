@@ -1,7 +1,7 @@
 var proName = 'wps_mix';//项目名称
 module.exports={
     proName:proName,
-    rem:true,//是否是rem布局项目
+    rem:false,//是否是rem布局项目
     remConfig:{//rem相关配置
         'width_design':1080,//设计稿尺寸
         'valid_num':6,//保留小数位
