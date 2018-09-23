@@ -99,8 +99,7 @@ gulp.task('sprite', function () {
 			});
 			return arr.join("");
 		}
-	})
-);
+	}));
 
 	var imgStream = spriteData.img
 		.pipe(gulp.dest('./src/assets/'));
