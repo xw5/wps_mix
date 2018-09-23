@@ -1,7 +1,7 @@
 @charset "utf-8";
 @import "./common/reset";
 @import "./common/var";
-@import "./common/media_query";
+//@import "./common/media_query";
 @import "./common/sprite";
 @import "./common/header";
 @import "./common/footer";
@@ -16,19 +16,20 @@
   position:fixed;
 }
 .loading_img{
-  width:3rem;
-  height:3rem;
+  width:300px;
+  height:300px;
   position:absolute;
   top:50%;
   left:50%;
   transform:translate(-50%,-50%);
 }
 .container{
-  width:10.8rem;
+  width:1080px;
   position:relative;
   .ovhide();
   .auto();
   .bg_img('ptg.png');
+  background-repeat:repeat-y;
   background-size:100% auto;
   color:#fff;
 }

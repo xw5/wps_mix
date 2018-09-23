@@ -4,6 +4,22 @@
     @@include("./template/meta.html",{
         "title":"这里是标题"
     })
+    <script type="text/javascript">
+        (function (doc, win) {
+            var docEl = doc.documentElement,
+                resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+                recalc = function () {
+                    var clientWidth = docEl.clientWidth;
+                    if (!clientWidth) return;
+                    clientWidth = clientWidth > 540 ? 540 : clientWidth;
+                    clientWidth = clientWidth < 320 ? 320 : clientWidth;
+                    docEl.style.fontSize = clientWidth / 10+'px';                    
+                };
+                if (!doc.addEventListener) return;
+                win.addEventListener(resizeEvt, recalc, false);
+                doc.addEventListener('DOMContentLoaded', recalc, false);
+        })(document, window);
+    </script>
     <link rel="stylesheet" href="./css/index.css" type="text/css">
 </head>
 <body>

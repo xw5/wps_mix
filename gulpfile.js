@@ -18,10 +18,6 @@ var tempDir = config.temp_dir;
 var isJs = nowStatus===0 ? 'js/' : '';
 var isCss = nowStatus===0 ? 'css/' : '';
 var isAssets = nowStatus===0 ? 'assets/' : '';
-var remOrPx = {
-	unit:config.rem ? 'rem' : 'px',
-	remBase:config.rem ? 100 : 1
-}
 
 var cssOnlineUrl = config.cssOnlineUrl;
 var assetsOnlineUrl = config.assetsOnlineUrl;
@@ -95,10 +91,10 @@ gulp.task('sprite', function () {
 					arr.push(".icon-"+sprite.name+
 					"{" +
 					"background-image: url('../assets/"+sprite.escaped_image+"');"+
-					"background-position: "+sprite.offset_x/remOrPx.remBase+remOrPx.unit+" "+sprite.offset_y/remOrPx.remBase+remOrPx.unit+";"+
-					"background-size:"+sprite.total_width/remOrPx.remBase+remOrPx.unit+" "+sprite.total_height/remOrPx.remBase+remOrPx.unit+";"+
-					"width:"+sprite.width/remOrPx.remBase+remOrPx.unit+";"+
-					"height:"+sprite.height/remOrPx.remBase+remOrPx.unit+";"+
+					"background-position: "+sprite.px.offset_x+" "+sprite.px.offset_y+";"+
+					"background-size:"+sprite.px.total_width+" "+sprite.px.total_height+";"+
+					"width:"+sprite.px.width+";"+
+					"height:"+sprite.px.height+";"+
 					"}\n");
 			});
 			return arr.join("");
@@ -142,6 +138,8 @@ gulp.task('less',function(){
 	.pipe(gp.autoprefixer({
 		browsers:["last 1000 versions"]
 	}))
+	//rem转换
+	.pipe(gp.if(config.rem,gp.px2remPlugin(config.remConfig)))
 	.pipe(gp.if(nowStatus === 2, gp.cleanCss({compatibility: 'ie8'})))
 	.pipe(gp.if(nowStatus != 2, gp.revAyou()))
 	.pipe(gp.sourcemaps.write('.'))
