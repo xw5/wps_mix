@@ -1,4 +1,4 @@
-这是wps项目的前端开发环境模板。
+这是xw模板工具的前端开发环境模板库。
 
 ---
 
@@ -38,21 +38,21 @@
 ### 项目模板获取
 
 项目模板获取方式有二种：
-1. 通过配套的脚手架wps-cli使用
+1. 通过配套的脚手架xw-cli使用
 
 ``` cmd
-    npm install wps-cli -g
-    wps create project-name
+    npm install xw-cli -g
+    xw create project-name
 ```
 通过此种方式获取代码，再选择需要集成的功能即可获得相应的代码模板
 
 2. 直接通过git clone使用
 ```
-    git clone git@github.com:xw5/wps_mix.git
+    git clone git@github.com:xw5/xw_mix.git
 ```
 通过此种方式获取代码，获取的是完整的模板文件，根据需要选择留下哪个html,并修改config/config.js下的template值，如为true,则是使用html的模块化功能，你需要保留template文件夹，保留index.template.html文件，删除index.html文件，再把index.template.html改成index.html,反之则保留index.html,删除index.template.html文件和template文件夹，rem与雪碧图是否开启直接修改config.js即可。
 
 ### 项目模板架构
 
 使用此项目模板需要遵循一定的目录结构，详细说明如下:
-![项目模板架构](https://raw.githubusercontent.com/xw5/wps_mix/master/explain.png)
+![项目模板架构](https://raw.githubusercontent.com/xw5/xw_mix/master/explain.png)
