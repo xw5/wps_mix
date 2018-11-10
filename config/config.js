@@ -1,4 +1,4 @@
-var proName = 'wps_mix';//项目名称
+var proName = 'xw_mix';//项目名称
 module.exports={
     proName:proName,
     rem:false,//是否是rem布局项目
